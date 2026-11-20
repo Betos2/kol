@@ -112,7 +112,7 @@
           <input id="videoFileInput" type="file" accept="video/*,audio/*" class="hidden" />
         </label>
 
-        <button id="demoStreamBtn" class="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-cinema-800 hover:bg-cinema-700 text-slate-200 border border-slate-700/80 text-xs sm:text-sm font-medium transition">
+        <button id="demoStreamBtn" type="button" class="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-cinema-800 hover:bg-cinema-700 text-slate-200 border border-slate-700/80 text-xs sm:text-sm font-medium transition">
           <svg class="w-4 h-4 text-teal-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
             <path stroke-linecap="round" stroke-linejoin="round" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -120,7 +120,7 @@
           <span class="hidden md:inline">Demo Stream</span>
         </button>
 
-        <button id="openNetlifyModalBtn" class="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-amber-500/15 hover:bg-amber-500/25 text-amber-300 border border-amber-500/30 text-xs sm:text-sm font-medium transition">
+        <button id="openNetlifyModalBtn" type="button" class="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-amber-500/15 hover:bg-amber-500/25 text-amber-300 border border-amber-500/30 text-xs sm:text-sm font-medium transition">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
           </svg>
@@ -148,10 +148,10 @@
           <h2 class="text-lg sm:text-xl font-bold text-white mb-1.5">Drop your video here or click Upload Video</h2>
           <p class="text-sm text-slate-400 max-w-md mb-5">Supports MP4, WebM, MOV, MKV, and audio files. Boost volume up to 400%, fine-tune playback speed, and auto-generate Hebrew captions.</p>
           <div class="flex flex-wrap items-center justify-center gap-3">
-            <button onclick="document.getElementById('videoFileInput').click()" class="px-4 py-2.5 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-cinema-950 font-semibold text-sm transition">
+            <button type="button" onclick="document.getElementById('videoFileInput').click()" class="px-4 py-2.5 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-cinema-950 font-semibold text-sm transition">
               Choose Local File
             </button>
-            <button onclick="startDemoMode()" class="px-4 py-2.5 rounded-xl bg-cinema-800 hover:bg-cinema-700 text-slate-200 border border-slate-700 text-sm font-medium transition">
+            <button type="button" onclick="startDemoMode()" class="px-4 py-2.5 rounded-xl bg-cinema-800 hover:bg-cinema-700 text-slate-200 border border-slate-700 text-sm font-medium transition">
               Load Hebrew Demo Stream
             </button>
           </div>
@@ -178,12 +178,12 @@
 
           <div class="flex items-center justify-between gap-3 flex-wrap">
             <div class="flex items-center gap-2">
-              <button id="playPauseBtn" title="Play / Pause (Space)" class="w-9 h-9 rounded-lg bg-cyan-500 hover:bg-cyan-400 text-cinema-950 flex items-center justify-center transition">
+              <button id="playPauseBtn" type="button" title="Play / Pause (Space)" class="w-9 h-9 rounded-lg bg-cyan-500 hover:bg-cyan-400 text-cinema-950 flex items-center justify-center transition">
                 <svg id="playIcon" class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
                 <svg id="pauseIcon" class="w-5 h-5 hidden" fill="currentColor" viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
               </button>
-              <button id="skipBackBtn" title="-5 seconds" class="px-2.5 py-1.5 rounded-lg bg-cinema-800 hover:bg-cinema-700 text-xs font-mono text-slate-300 border border-slate-700/70 transition">-5s</button>
-              <button id="skipFwdBtn" title="+5 seconds" class="px-2.5 py-1.5 rounded-lg bg-cinema-800 hover:bg-cinema-700 text-xs font-mono text-slate-300 border border-slate-700/70 transition">+5s</button>
+              <button id="skipBackBtn" type="button" title="-5 seconds" class="px-2.5 py-1.5 rounded-lg bg-cinema-800 hover:bg-cinema-700 text-xs font-mono text-slate-300 border border-slate-700/70 transition">-5s</button>
+              <button id="skipFwdBtn" type="button" title="+5 seconds" class="px-2.5 py-1.5 rounded-lg bg-cinema-800 hover:bg-cinema-700 text-xs font-mono text-slate-300 border border-slate-700/70 transition">+5s</button>
               <span class="text-xs font-mono text-slate-300 ml-1">
                 <span id="currentTimeLabel">00:00.0</span>
                 <span class="text-slate-500">/</span>
@@ -193,15 +193,15 @@
 
             <div class="flex items-center gap-2">
               <span id="fileNameBadge" class="text-xs text-slate-400 truncate max-w-[180px] hidden sm:inline"></span>
-              <button id="toggleCaptionsVisBtn" title="Toggle Subtitle Visibility" class="px-2.5 py-1.5 rounded-lg bg-cyan-500/15 text-cyan-300 border border-cyan-500/30 text-xs font-semibold transition">
+              <button id="toggleCaptionsVisBtn" type="button" title="Toggle Subtitle Visibility" class="px-2.5 py-1.5 rounded-lg bg-cyan-500/15 text-cyan-300 border border-cyan-500/30 text-xs font-semibold transition">
                 CC ON
               </button>
-              <button id="pipBtn" title="Picture-in-Picture" class="p-2 rounded-lg bg-cinema-800 hover:bg-cinema-700 text-slate-300 border border-slate-700/70 transition">
+              <button id="pipBtn" type="button" title="Picture-in-Picture" class="p-2 rounded-lg bg-cinema-800 hover:bg-cinema-700 text-slate-300 border border-slate-700/70 transition">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
                 </svg>
               </button>
-              <button id="fullscreenBtn" title="Fullscreen" class="p-2 rounded-lg bg-cinema-800 hover:bg-cinema-700 text-slate-300 border border-slate-700/70 transition">
+              <button id="fullscreenBtn" type="button" title="Fullscreen" class="p-2 rounded-lg bg-cinema-800 hover:bg-cinema-700 text-slate-300 border border-slate-700/70 transition">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
                 </svg>
@@ -227,7 +227,7 @@
           </div>
 
           <div class="flex items-center gap-3">
-            <button id="muteToggleBtn" class="p-2 rounded-lg bg-cinema-800 hover:bg-cinema-700 text-slate-300 border border-slate-700/70 transition" title="Mute / Restore">
+            <button id="muteToggleBtn" type="button" class="p-2 rounded-lg bg-cinema-800 hover:bg-cinema-700 text-slate-300 border border-slate-700/70 transition" title="Mute / Restore">
               <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
               </svg>
@@ -242,12 +242,12 @@
 
           <!-- Volume Presets -->
           <div class="grid grid-cols-6 gap-1.5">
-            <button data-vol="0" class="vol-preset py-1 rounded-md bg-cinema-850 hover:bg-cinema-800 border border-slate-800 text-[11px] font-mono text-slate-300 transition">0%</button>
-            <button data-vol="100" class="vol-preset py-1 rounded-md bg-cyan-500/20 border border-cyan-500/40 text-[11px] font-mono text-cyan-300 font-semibold transition">100%</button>
-            <button data-vol="150" class="vol-preset py-1 rounded-md bg-cinema-850 hover:bg-cinema-800 border border-slate-800 text-[11px] font-mono text-slate-300 transition">150%</button>
-            <button data-vol="200" class="vol-preset py-1 rounded-md bg-cinema-850 hover:bg-cinema-800 border border-slate-800 text-[11px] font-mono text-slate-300 transition">200%</button>
-            <button data-vol="300" class="vol-preset py-1 rounded-md bg-cinema-850 hover:bg-cinema-800 border border-slate-800 text-[11px] font-mono text-amber-300 transition">300%</button>
-            <button data-vol="400" class="vol-preset py-1 rounded-md bg-cinema-850 hover:bg-cinema-800 border border-slate-800 text-[11px] font-mono text-rose-300 transition">400%</button>
+            <button type="button" data-vol="0" class="vol-preset py-1 rounded-md bg-cinema-850 hover:bg-cinema-800 border border-slate-800 text-[11px] font-mono text-slate-300 transition">0%</button>
+            <button type="button" data-vol="100" class="vol-preset py-1 rounded-md bg-cyan-500/20 border border-cyan-500/40 text-[11px] font-mono text-cyan-300 font-semibold transition">100%</button>
+            <button type="button" data-vol="150" class="vol-preset py-1 rounded-md bg-cinema-850 hover:bg-cinema-800 border border-slate-800 text-[11px] font-mono text-slate-300 transition">150%</button>
+            <button type="button" data-vol="200" class="vol-preset py-1 rounded-md bg-cinema-850 hover:bg-cinema-800 border border-slate-800 text-[11px] font-mono text-slate-300 transition">200%</button>
+            <button type="button" data-vol="300" class="vol-preset py-1 rounded-md bg-cinema-850 hover:bg-cinema-800 border border-slate-800 text-[11px] font-mono text-amber-300 transition">300%</button>
+            <button type="button" data-vol="400" class="vol-preset py-1 rounded-md bg-cinema-850 hover:bg-cinema-800 border border-slate-800 text-[11px] font-mono text-rose-300 transition">400%</button>
           </div>
         </div>
 
@@ -272,13 +272,13 @@
 
           <!-- Speed Presets -->
           <div class="grid grid-cols-7 gap-1">
-            <button data-speed="0.75" class="speed-preset py-1 rounded-md bg-cinema-850 hover:bg-cinema-800 border border-slate-800 text-[11px] font-mono text-slate-300 transition">0.75x</button>
-            <button data-speed="1" class="speed-preset py-1 rounded-md bg-teal-500/20 border border-teal-500/40 text-[11px] font-mono text-teal-300 font-semibold transition">1x</button>
-            <button data-speed="1.25" class="speed-preset py-1 rounded-md bg-cinema-850 hover:bg-cinema-800 border border-slate-800 text-[11px] font-mono text-slate-300 transition">1.25x</button>
-            <button data-speed="1.5" class="speed-preset py-1 rounded-md bg-cinema-850 hover:bg-cinema-800 border border-slate-800 text-[11px] font-mono text-slate-300 transition">1.5x</button>
-            <button data-speed="1.75" class="speed-preset py-1 rounded-md bg-cinema-850 hover:bg-cinema-800 border border-slate-800 text-[11px] font-mono text-slate-300 transition">1.75x</button>
-            <button data-speed="2" class="speed-preset py-1 rounded-md bg-cinema-850 hover:bg-cinema-800 border border-slate-800 text-[11px] font-mono text-slate-300 transition">2x</button>
-            <button data-speed="2.5" class="speed-preset py-1 rounded-md bg-cinema-850 hover:bg-cinema-800 border border-slate-800 text-[11px] font-mono text-slate-300 transition">2.5x</button>
+            <button type="button" data-speed="0.75" class="speed-preset py-1 rounded-md bg-cinema-850 hover:bg-cinema-800 border border-slate-800 text-[11px] font-mono text-slate-300 transition">0.75x</button>
+            <button type="button" data-speed="1" class="speed-preset py-1 rounded-md bg-teal-500/20 border border-teal-500/40 text-[11px] font-mono text-teal-300 font-semibold transition">1x</button>
+            <button type="button" data-speed="1.25" class="speed-preset py-1 rounded-md bg-cinema-850 hover:bg-cinema-800 border border-slate-800 text-[11px] font-mono text-slate-300 transition">1.25x</button>
+            <button type="button" data-speed="1.5" class="speed-preset py-1 rounded-md bg-cinema-850 hover:bg-cinema-800 border border-slate-800 text-[11px] font-mono text-slate-300 transition">1.5x</button>
+            <button type="button" data-speed="1.75" class="speed-preset py-1 rounded-md bg-cinema-850 hover:bg-cinema-800 border border-slate-800 text-[11px] font-mono text-slate-300 transition">1.75x</button>
+            <button type="button" data-speed="2" class="speed-preset py-1 rounded-md bg-cinema-850 hover:bg-cinema-800 border border-slate-800 text-[11px] font-mono text-slate-300 transition">2x</button>
+            <button type="button" data-speed="2.5" class="speed-preset py-1 rounded-md bg-cinema-850 hover:bg-cinema-800 border border-slate-800 text-[11px] font-mono text-slate-300 transition">2.5x</button>
           </div>
         </div>
       </div>
@@ -325,10 +325,10 @@
 
       <!-- Mode Switch Tabs -->
       <div class="grid grid-cols-2 border-b border-slate-800 bg-cinema-950/60 text-xs font-semibold">
-        <button id="tabAiBtn" class="py-2.5 px-3 border-b-2 border-cyan-400 text-cyan-300 bg-cyan-500/5 transition">
+        <button id="tabAiBtn" type="button" class="py-2.5 px-3 border-b-2 border-cyan-400 text-cyan-300 bg-cyan-500/5 transition">
           1. Netlify AI Transcribe
         </button>
-        <button id="tabLiveBtn" class="py-2.5 px-3 border-b-2 border-transparent text-slate-400 hover:text-slate-200 transition">
+        <button id="tabLiveBtn" type="button" class="py-2.5 px-3 border-b-2 border-transparent text-slate-400 hover:text-slate-200 transition">
           2. Live Speech-to-Text (Browser)
         </button>
       </div>
@@ -340,7 +340,7 @@
           <input id="endpointInput" type="text" value="/api/transcribe" class="flex-1 px-2.5 py-1.5 rounded-lg bg-cinema-950 border border-slate-800 font-mono text-slate-200 focus:outline-none focus:border-cyan-400" />
         </div>
 
-        <button id="extractAndTranscribeBtn" class="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-teal-400 to-cyan-400 hover:from-teal-300 hover:to-cyan-300 text-cinema-950 font-bold text-sm flex items-center justify-center gap-2 shadow-lg shadow-cyan-500/15 transition">
+        <button id="extractAndTranscribeBtn" type="button" class="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-teal-400 to-cyan-400 hover:from-teal-300 hover:to-cyan-300 text-cinema-950 font-bold text-sm flex items-center justify-center gap-2 shadow-lg shadow-cyan-500/15 transition">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
           </svg>
@@ -356,7 +356,7 @@
           Uses your browser's built-in <span class="font-mono text-cyan-300">he-IL</span> speech recognizer to transcribe audio in real time while your video plays (best in Chrome/Edge).
         </p>
         <div class="flex items-center gap-2">
-          <button id="toggleLiveSpeechBtn" class="flex-1 py-2.5 px-4 rounded-xl bg-rose-500 hover:bg-rose-400 text-white font-semibold text-sm flex items-center justify-center gap-2 transition">
+          <button id="toggleLiveSpeechBtn" type="button" class="flex-1 py-2.5 px-4 rounded-xl bg-rose-500 hover:bg-rose-400 text-white font-semibold text-sm flex items-center justify-center gap-2 transition">
             <span id="liveDot" class="w-2.5 h-2.5 rounded-full bg-white"></span>
             <span id="liveSpeechBtnLabel">Start Live Hebrew Dictation</span>
           </button>
@@ -367,7 +367,7 @@
       <!-- Cue Toolbar -->
       <div class="px-4 py-2.5 border-b border-slate-800 bg-cinema-950/40 flex items-center justify-between gap-2 flex-wrap">
         <div class="flex items-center gap-2">
-          <button id="addCueBtn" class="px-2.5 py-1.5 rounded-lg bg-cyan-500/15 hover:bg-cyan-500/25 text-cyan-300 border border-cyan-500/30 text-xs font-semibold transition">
+          <button id="addCueBtn" type="button" class="px-2.5 py-1.5 rounded-lg bg-cyan-500/15 hover:bg-cyan-500/25 text-cyan-300 border border-cyan-500/30 text-xs font-semibold transition">
             + Add Cue
           </button>
           <span id="cueCountBadge" class="px-2 py-1 rounded-md bg-cinema-850 border border-slate-800 font-mono text-[11px] text-slate-400">0 cues</span>
@@ -378,8 +378,8 @@
             Import
             <input id="importSubInput" type="file" accept=".srt,.vtt" class="hidden" />
           </label>
-          <button id="exportVttBtn" class="px-2.5 py-1.5 rounded-lg bg-cinema-850 hover:bg-cinema-800 border border-slate-700/80 text-xs font-mono text-slate-200 transition">.VTT</button>
-          <button id="exportSrtBtn" class="px-2.5 py-1.5 rounded-lg bg-cinema-850 hover:bg-cinema-800 border border-slate-700/80 text-xs font-mono text-amber-300 transition">.SRT</button>
+          <button id="exportVttBtn" type="button" class="px-2.5 py-1.5 rounded-lg bg-cinema-850 hover:bg-cinema-800 border border-slate-700/80 text-xs font-mono text-slate-200 transition">.VTT</button>
+          <button id="exportSrtBtn" type="button" class="px-2.5 py-1.5 rounded-lg bg-cinema-850 hover:bg-cinema-800 border border-slate-700/80 text-xs font-mono text-amber-300 transition">.SRT</button>
         </div>
       </div>
 
@@ -399,16 +399,16 @@
       <div class="px-5 py-4 border-b border-slate-800 flex items-center justify-between">
         <div>
           <h3 class="text-base font-bold text-white">Netlify Serverless Whisper Setup</h3>
-          <p class="text-xs text-slate-400">Place these two files alongside your <code class="text-cyan-300">index.html</code> and set <code class="text-amber-300">OPENAI_API_KEY</code> in Netlify.</p>
+          <p class="text-xs text-slate-400">Place these two files alongside your <code class="text-cyan-300">index.html</code> and set your API key in Netlify.</p>
         </div>
-        <button id="closeNetlifyModalBtn" class="p-1.5 rounded-lg bg-cinema-800 hover:bg-cinema-700 text-slate-300">✕</button>
+        <button id="closeNetlifyModalBtn" type="button" class="p-1.5 rounded-lg bg-cinema-800 hover:bg-cinema-700 text-slate-300">✕</button>
       </div>
 
       <div class="p-5 overflow-y-auto flex flex-col gap-5 text-xs">
         <div>
           <div class="flex items-center justify-between mb-1.5">
             <span class="font-mono font-semibold text-cyan-300">1. netlify/functions/transcribe.mjs</span>
-            <button onclick="copyCodeBlock('codeTranscribeMjs', this)" class="px-2.5 py-1 rounded bg-cinema-800 hover:bg-cinema-700 text-slate-200 border border-slate-700">Copy</button>
+            <button type="button" onclick="copyCodeBlock('codeTranscribeMjs', this)" class="px-2.5 py-1 rounded bg-cinema-800 hover:bg-cinema-700 text-slate-200 border border-slate-700">Copy</button>
           </div>
           <pre id="codeTranscribeMjs" class="p-3.5 rounded-xl bg-cinema-950 border border-slate-800 font-mono text-[11px] text-slate-300 overflow-x-auto leading-relaxed"></pre>
         </div>
@@ -416,7 +416,7 @@
         <div>
           <div class="flex items-center justify-between mb-1.5">
             <span class="font-mono font-semibold text-amber-300">2. netlify.toml</span>
-            <button onclick="copyCodeBlock('codeNetlifyToml', this)" class="px-2.5 py-1 rounded bg-cinema-800 hover:bg-cinema-700 text-slate-200 border border-slate-700">Copy</button>
+            <button type="button" onclick="copyCodeBlock('codeNetlifyToml', this)" class="px-2.5 py-1 rounded bg-cinema-800 hover:bg-cinema-700 text-slate-200 border border-slate-700">Copy</button>
           </div>
           <pre id="codeNetlifyToml" class="p-3.5 rounded-xl bg-cinema-950 border border-slate-800 font-mono text-[11px] text-slate-300 overflow-x-auto leading-relaxed"></pre>
         </div>
@@ -447,7 +447,7 @@
       isListening: false,
     };
 
-    const HEBREW_REGEX = /[֐-׿]/;
+    const HEBREW_REGEX = /[\u0590-\u05FF]/;
 
     // --- DOM Elements ---
     const video = document.getElementById('videoPlayer');
@@ -764,14 +764,14 @@
         card.innerHTML = `
           <div class="flex items-center justify-between gap-2 text-[11px] font-mono">
             <div class="flex items-center gap-1.5">
-              <button data-action="seek" class="px-1.5 py-0.5 rounded bg-cyan-500/15 text-cyan-300 hover:bg-cyan-500/25" title="Jump to cue">#${idx + 1}</button>
+              <button type="button" data-action="seek" class="px-1.5 py-0.5 rounded bg-cyan-500/15 text-cyan-300 hover:bg-cyan-500/25" title="Jump to cue">#${idx + 1}</button>
               <input data-field="start" type="number" step="0.1" min="0" value="${cue.start.toFixed(1)}" class="w-16 px-1.5 py-0.5 rounded bg-cinema-900 border border-slate-800 text-slate-300 text-center" />
-              <button data-action="syncStart" title="Set start to current playhead" class="px-1.5 py-0.5 rounded bg-cinema-850 hover:bg-cinema-800 text-slate-400">In</button>
+              <button type="button" data-action="syncStart" title="Set start to current playhead" class="px-1.5 py-0.5 rounded bg-cinema-850 hover:bg-cinema-800 text-slate-400">In</button>
               <span class="text-slate-600">→</span>
               <input data-field="end" type="number" step="0.1" min="0" value="${cue.end.toFixed(1)}" class="w-16 px-1.5 py-0.5 rounded bg-cinema-900 border border-slate-800 text-slate-300 text-center" />
-              <button data-action="syncEnd" title="Set end to current playhead" class="px-1.5 py-0.5 rounded bg-cinema-850 hover:bg-cinema-800 text-slate-400">Out</button>
+              <button type="button" data-action="syncEnd" title="Set end to current playhead" class="px-1.5 py-0.5 rounded bg-cinema-850 hover:bg-cinema-800 text-slate-400">Out</button>
             </div>
-            <button data-action="delete" class="text-slate-500 hover:text-rose-400 px-1.5 py-0.5 transition" title="Delete cue">✕</button>
+            <button type="button" data-action="delete" class="text-slate-500 hover:text-rose-400 px-1.5 py-0.5 transition" title="Delete cue">✕</button>
           </div>
           <textarea rows="2" dir="${isHeb ? 'rtl' : 'auto'}" class="w-full rounded-lg bg-cinema-900 border border-slate-800 focus:border-cyan-400 focus:outline-none px-2.5 py-1.5 text-sm text-white leading-snug ${isHeb ? 'hebrew-rtl' : ''}">${cue.text}</textarea>
         `;
@@ -946,8 +946,8 @@
             'warn',
             `<b>Standalone Mode Detected:</b> <code class="font-mono">${endpoint}</code> is not active yet. Deploy with the Netlify script or use <b>Live Speech-to-Text</b> right now in your browser!
             <div class="mt-2.5 flex gap-2">
-              <button onclick="document.getElementById('openNetlifyModalBtn').click()" class="px-2.5 py-1.5 rounded-lg bg-amber-500/20 hover:bg-amber-500/30 border border-amber-500/40 font-semibold text-amber-200">View Netlify Script</button>
-              <button onclick="switchCaptionTab('live')" class="px-2.5 py-1.5 rounded-lg bg-cinema-800 hover:bg-cinema-700 border border-slate-700 font-semibold text-slate-200">Switch to Live Speech</button>
+              <button type="button" onclick="document.getElementById('openNetlifyModalBtn').click()" class="px-2.5 py-1.5 rounded-lg bg-amber-500/20 hover:bg-amber-500/30 border border-amber-500/40 font-semibold text-amber-200">View Netlify Script</button>
+              <button type="button" onclick="switchCaptionTab('live')" class="px-2.5 py-1.5 rounded-lg bg-cinema-800 hover:bg-cinema-700 border border-slate-700 font-semibold text-slate-200">Switch to Live Speech</button>
             </div>`
           );
         } else {
@@ -1032,7 +1032,7 @@
 
     // --- Export / Import SRT & VTT ---
     function downloadTextFile(filename, content) {
-      const bom = '﻿'; // UTF-8 BOM for Hebrew compatibility
+      const bom = '\uFEFF';
       const blob = new Blob([bom + content], { type: 'text/plain;charset=utf-8' });
       const a = document.createElement('a');
       a.href = URL.createObjectURL(blob);
@@ -1041,23 +1041,13 @@
     }
 
     function exportSrt() {
-      const lines = state.cues.map((c, i) => `${i + 1}
-${formatSrtTime(c.start)} --> ${formatSrtTime(c.end)}
-${c.text}
-`);
-      downloadTextFile('hebrew_captions.srt', lines.join('
-'));
+      const lines = state.cues.map((c, i) => `${i + 1}\n${formatSrtTime(c.start)} --> ${formatSrtTime(c.end)}\n${c.text}\n`);
+      downloadTextFile('hebrew_captions.srt', lines.join('\n'));
     }
 
     function exportVtt() {
-      const lines = state.cues.map((c, i) => `${i + 1}
-${formatVttTime(c.start)} --> ${formatVttTime(c.end)}
-${c.text}
-`);
-      downloadTextFile('hebrew_captions.vtt', 'WEBVTT
-
-' + lines.join('
-'));
+      const lines = state.cues.map((c, i) => `${i + 1}\n${formatVttTime(c.start)} --> ${formatVttTime(c.end)}\n${c.text}\n`);
+      downloadTextFile('hebrew_captions.vtt', 'WEBVTT\n\n' + lines.join('\n'));
     }
 
     function parseTimestampToSeconds(ts) {
@@ -1073,13 +1063,10 @@ ${c.text}
     }
 
     function importSubtitleText(raw) {
-      const blocks = raw.replace(//g, '').split(/
-
-+/);
+      const blocks = raw.replace(/\r/g, '').split(/\n\n+/);
       const parsed = [];
       for (const b of blocks) {
-        const lines = b.split('
-').map(l => l.trim()).filter(Boolean);
+        const lines = b.split('\n').map(l => l.trim()).filter(Boolean);
         const arrowIdx = lines.findIndex(l => l.includes('-->'));
         if (arrowIdx !== -1) {
           const [startStr, endStr] = lines[arrowIdx].split('-->');
@@ -1127,6 +1114,10 @@ ${c.text}
     document.getElementById('codeNetlifyToml').textContent = `[build]
   publish = "."
   functions = "netlify/functions"
+
+[build.environment]
+  SECRETS_SCAN_OMIT_KEYS = "OPENAI_API_KEY"
+  SECRETS_SCAN_OMIT_PATHS = "index.html,README.md"
 
 [functions]
   node_bundler = "esbuild"
