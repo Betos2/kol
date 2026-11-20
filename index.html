@@ -1,0 +1,1292 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kolno'a Studio — Video Player & Hebrew Caption Generator</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'Heebo', 'sans-serif'],
+            hebrew: ['Heebo', 'Inter', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          },
+          colors: {
+            cinema: {
+              950: '#090b10',
+              900: '#0f131c',
+              850: '#141925',
+              800: '#1b2232',
+              700: '#273147',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body {
+      background-color: #090b10;
+      color: #f1f5f9;
+      font-family: 'Inter', 'Heebo', sans-serif;
+    }
+    input[type="range"] {
+      -webkit-appearance: none;
+      appearance: none;
+      background: transparent;
+      cursor: pointer;
+    }
+    input[type="range"]::-webkit-slider-runnable-track {
+      height: 6px;
+      border-radius: 999px;
+    }
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      height: 16px;
+      width: 16px;
+      border-radius: 50%;
+      background: #22d3ee;
+      border: 2px solid #090b10;
+      margin-top: -5px;
+      box-shadow: 0 0 10px rgba(34, 211, 238, 0.5);
+      transition: transform 0.1s ease;
+    }
+    input[type="range"]::-webkit-slider-thumb:hover {
+      transform: scale(1.15);
+    }
+    .hebrew-rtl {
+      direction: rtl;
+      unicode-bidi: plaintext;
+      font-family: 'Heebo', 'Inter', sans-serif;
+    }
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #0f131c;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #273147;
+      border-radius: 999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #3b4968;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col selection:bg-cyan-500/30 selection:text-cyan-200">
+
+  <!-- Top Header -->
+  <header class="border-b border-slate-800/80 bg-cinema-900/90 backdrop-blur-md sticky top-0 z-30">
+    <div class="max-w-[1600px] mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-4">
+      <div class="flex items-center gap-3">
+        <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-cyan-400 to-teal-500 flex items-center justify-center text-cinema-950 font-extrabold shadow-lg shadow-cyan-500/20">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+          </svg>
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <h1 class="font-bold text-base sm:text-lg tracking-tight text-white">Kolno'a Studio</h1>
+            <span class="text-[11px] font-mono px-2 py-0.5 rounded-full bg-cyan-500/15 text-cyan-300 border border-cyan-500/30">עברית + RTL</span>
+          </div>
+          <p class="text-xs text-slate-400 hidden sm:block">400% Audio Boost • Precision Speed • AI Hebrew Captions</p>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-2.5">
+        <label class="cursor-pointer inline-flex items-center gap-2 px-3.5 py-2 rounded-lg bg-cyan-500 hover:bg-cyan-400 text-cinema-950 font-semibold text-xs sm:text-sm transition shadow-lg shadow-cyan-500/20">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+          </svg>
+          <span>Upload Video</span>
+          <input id="videoFileInput" type="file" accept="video/*,audio/*" class="hidden" />
+        </label>
+
+        <button id="demoStreamBtn" class="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-cinema-800 hover:bg-cinema-700 text-slate-200 border border-slate-700/80 text-xs sm:text-sm font-medium transition">
+          <svg class="w-4 h-4 text-teal-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+            <path stroke-linecap="round" stroke-linejoin="round" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          <span class="hidden md:inline">Demo Stream</span>
+        </button>
+
+        <button id="openNetlifyModalBtn" class="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-amber-500/15 hover:bg-amber-500/25 text-amber-300 border border-amber-500/30 text-xs sm:text-sm font-medium transition">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
+          </svg>
+          <span>Netlify Script</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Workspace -->
+  <main class="flex-1 max-w-[1600px] w-full mx-auto px-4 sm:px-6 py-5 grid grid-cols-1 xl:grid-cols-12 gap-6">
+
+    <!-- Left Column: Video Player + Audio & Speed Controls -->
+    <section class="xl:col-span-7 flex flex-col gap-5">
+
+      <!-- Player Stage -->
+      <div id="playerContainer" class="relative rounded-2xl overflow-hidden bg-black border border-slate-800 shadow-2xl group">
+        <!-- Empty Dropzone -->
+        <div id="dropzoneOverlay" class="aspect-video w-full flex flex-col items-center justify-center p-8 text-center bg-gradient-to-b from-cinema-900 to-cinema-950 border-2 border-dashed border-slate-700/70 m-0 transition">
+          <div class="w-16 h-16 rounded-2xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center text-cyan-400 mb-4">
+            <svg class="w-8 h-8" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+            </svg>
+          </div>
+          <h2 class="text-lg sm:text-xl font-bold text-white mb-1.5">Drop your video here or click Upload Video</h2>
+          <p class="text-sm text-slate-400 max-w-md mb-5">Supports MP4, WebM, MOV, MKV, and audio files. Boost volume up to 400%, fine-tune playback speed, and auto-generate Hebrew captions.</p>
+          <div class="flex flex-wrap items-center justify-center gap-3">
+            <button onclick="document.getElementById('videoFileInput').click()" class="px-4 py-2.5 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-cinema-950 font-semibold text-sm transition">
+              Choose Local File
+            </button>
+            <button onclick="startDemoMode()" class="px-4 py-2.5 rounded-xl bg-cinema-800 hover:bg-cinema-700 text-slate-200 border border-slate-700 text-sm font-medium transition">
+              Load Hebrew Demo Stream
+            </button>
+          </div>
+        </div>
+
+        <!-- Video Element & Demo Canvas -->
+        <div id="mediaWrapper" class="hidden relative aspect-video w-full bg-black flex items-center justify-center">
+          <video id="videoPlayer" class="w-full h-full object-contain" playsinline crossorigin="anonymous"></video>
+          <canvas id="demoCanvas" class="hidden w-full h-full object-contain"></canvas>
+
+          <!-- Live Subtitle Overlay -->
+          <div id="subtitleOverlayWrapper" class="pointer-events-none absolute inset-x-4 bottom-16 sm:bottom-20 flex justify-center z-20">
+            <div id="subtitleOverlayText" class="hidden max-w-[90%] px-4 py-2 rounded-lg text-center font-bold leading-snug shadow-lg transition-all duration-100" style="font-size: 24px; color: #ffffff; background-color: rgba(9, 11, 16, 0.82);"></div>
+          </div>
+        </div>
+
+        <!-- Transport Bar -->
+        <div id="transportControls" class="hidden bg-cinema-900/95 border-t border-slate-800 px-4 py-3 flex flex-col gap-2.5">
+          <!-- Scrubber with Cue Markers -->
+          <div class="relative flex items-center">
+            <div id="cueMarkersLayer" class="pointer-events-none absolute inset-x-0 h-1.5 rounded-full overflow-hidden"></div>
+            <input id="seekSlider" type="range" min="0" max="100" step="0.05" value="0" class="w-full z-10 accent-cyan-400" />
+          </div>
+
+          <div class="flex items-center justify-between gap-3 flex-wrap">
+            <div class="flex items-center gap-2">
+              <button id="playPauseBtn" title="Play / Pause (Space)" class="w-9 h-9 rounded-lg bg-cyan-500 hover:bg-cyan-400 text-cinema-950 flex items-center justify-center transition">
+                <svg id="playIcon" class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                <svg id="pauseIcon" class="w-5 h-5 hidden" fill="currentColor" viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+              </button>
+              <button id="skipBackBtn" title="-5 seconds" class="px-2.5 py-1.5 rounded-lg bg-cinema-800 hover:bg-cinema-700 text-xs font-mono text-slate-300 border border-slate-700/70 transition">-5s</button>
+              <button id="skipFwdBtn" title="+5 seconds" class="px-2.5 py-1.5 rounded-lg bg-cinema-800 hover:bg-cinema-700 text-xs font-mono text-slate-300 border border-slate-700/70 transition">+5s</button>
+              <span class="text-xs font-mono text-slate-300 ml-1">
+                <span id="currentTimeLabel">00:00.0</span>
+                <span class="text-slate-500">/</span>
+                <span id="durationLabel">00:00.0</span>
+              </span>
+            </div>
+
+            <div class="flex items-center gap-2">
+              <span id="fileNameBadge" class="text-xs text-slate-400 truncate max-w-[180px] hidden sm:inline"></span>
+              <button id="toggleCaptionsVisBtn" title="Toggle Subtitle Visibility" class="px-2.5 py-1.5 rounded-lg bg-cyan-500/15 text-cyan-300 border border-cyan-500/30 text-xs font-semibold transition">
+                CC ON
+              </button>
+              <button id="pipBtn" title="Picture-in-Picture" class="p-2 rounded-lg bg-cinema-800 hover:bg-cinema-700 text-slate-300 border border-slate-700/70 transition">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                </svg>
+              </button>
+              <button id="fullscreenBtn" title="Fullscreen" class="p-2 rounded-lg bg-cinema-800 hover:bg-cinema-700 text-slate-300 border border-slate-700/70 transition">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Audio 400% Booster & Speed Control Deck -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+        <!-- 0% to 400% Volume Booster Card -->
+        <div class="rounded-2xl bg-cinema-900 border border-slate-800 p-4 flex flex-col justify-between gap-3">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <span class="w-2 h-2 rounded-full bg-cyan-400"></span>
+              <h3 class="text-sm font-semibold text-white">Volume Pre-Amp Booster</h3>
+            </div>
+            <span id="volumeBadge" class="font-mono text-sm font-bold px-2.5 py-0.5 rounded-md bg-cyan-500/15 text-cyan-300 border border-cyan-500/30">
+              100%
+            </span>
+          </div>
+
+          <div class="flex items-center gap-3">
+            <button id="muteToggleBtn" class="p-2 rounded-lg bg-cinema-800 hover:bg-cinema-700 text-slate-300 border border-slate-700/70 transition" title="Mute / Restore">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
+              </svg>
+            </button>
+            <input id="volumeSlider" type="range" min="0" max="400" step="1" value="100" class="flex-1 bg-slate-800 rounded-full" />
+          </div>
+
+          <!-- Live VU Level Meter -->
+          <div class="w-full h-1.5 rounded-full bg-cinema-950 overflow-hidden border border-slate-800/80">
+            <div id="vuMeterBar" class="h-full w-0 bg-gradient-to-r from-teal-400 via-cyan-400 to-amber-400 transition-all duration-75"></div>
+          </div>
+
+          <!-- Volume Presets -->
+          <div class="grid grid-cols-6 gap-1.5">
+            <button data-vol="0" class="vol-preset py-1 rounded-md bg-cinema-850 hover:bg-cinema-800 border border-slate-800 text-[11px] font-mono text-slate-300 transition">0%</button>
+            <button data-vol="100" class="vol-preset py-1 rounded-md bg-cyan-500/20 border border-cyan-500/40 text-[11px] font-mono text-cyan-300 font-semibold transition">100%</button>
+            <button data-vol="150" class="vol-preset py-1 rounded-md bg-cinema-850 hover:bg-cinema-800 border border-slate-800 text-[11px] font-mono text-slate-300 transition">150%</button>
+            <button data-vol="200" class="vol-preset py-1 rounded-md bg-cinema-850 hover:bg-cinema-800 border border-slate-800 text-[11px] font-mono text-slate-300 transition">200%</button>
+            <button data-vol="300" class="vol-preset py-1 rounded-md bg-cinema-850 hover:bg-cinema-800 border border-slate-800 text-[11px] font-mono text-amber-300 transition">300%</button>
+            <button data-vol="400" class="vol-preset py-1 rounded-md bg-cinema-850 hover:bg-cinema-800 border border-slate-800 text-[11px] font-mono text-rose-300 transition">400%</button>
+          </div>
+        </div>
+
+        <!-- Custom Playback Speed Card -->
+        <div class="rounded-2xl bg-cinema-900 border border-slate-800 p-4 flex flex-col justify-between gap-3">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <span class="w-2 h-2 rounded-full bg-teal-400"></span>
+              <h3 class="text-sm font-semibold text-white">Playback Speed</h3>
+            </div>
+            <div class="flex items-center gap-1.5">
+              <input id="customSpeedInput" type="number" min="0.1" max="4.0" step="0.05" value="1.00" class="w-16 px-2 py-0.5 rounded-md bg-cinema-950 border border-slate-700 font-mono text-xs text-teal-300 text-right focus:outline-none focus:border-teal-400" />
+              <span class="text-xs font-mono text-slate-400">x</span>
+            </div>
+          </div>
+
+          <div class="flex items-center gap-3">
+            <span class="text-[11px] font-mono text-slate-500">0.1x</span>
+            <input id="speedSlider" type="range" min="0.1" max="4.0" step="0.05" value="1.0" class="flex-1 bg-slate-800 rounded-full" />
+            <span class="text-[11px] font-mono text-slate-500">4.0x</span>
+          </div>
+
+          <!-- Speed Presets -->
+          <div class="grid grid-cols-7 gap-1">
+            <button data-speed="0.75" class="speed-preset py-1 rounded-md bg-cinema-850 hover:bg-cinema-800 border border-slate-800 text-[11px] font-mono text-slate-300 transition">0.75x</button>
+            <button data-speed="1" class="speed-preset py-1 rounded-md bg-teal-500/20 border border-teal-500/40 text-[11px] font-mono text-teal-300 font-semibold transition">1x</button>
+            <button data-speed="1.25" class="speed-preset py-1 rounded-md bg-cinema-850 hover:bg-cinema-800 border border-slate-800 text-[11px] font-mono text-slate-300 transition">1.25x</button>
+            <button data-speed="1.5" class="speed-preset py-1 rounded-md bg-cinema-850 hover:bg-cinema-800 border border-slate-800 text-[11px] font-mono text-slate-300 transition">1.5x</button>
+            <button data-speed="1.75" class="speed-preset py-1 rounded-md bg-cinema-850 hover:bg-cinema-800 border border-slate-800 text-[11px] font-mono text-slate-300 transition">1.75x</button>
+            <button data-speed="2" class="speed-preset py-1 rounded-md bg-cinema-850 hover:bg-cinema-800 border border-slate-800 text-[11px] font-mono text-slate-300 transition">2x</button>
+            <button data-speed="2.5" class="speed-preset py-1 rounded-md bg-cinema-850 hover:bg-cinema-800 border border-slate-800 text-[11px] font-mono text-slate-300 transition">2.5x</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Subtitle Styling Strip -->
+      <div class="rounded-2xl bg-cinema-900 border border-slate-800 px-4 py-3 flex flex-wrap items-center justify-between gap-4">
+        <span class="text-xs font-semibold text-slate-300">Caption Style (RTL Auto-Detect)</span>
+        <div class="flex flex-wrap items-center gap-4 text-xs">
+          <label class="flex items-center gap-2 text-slate-400">
+            <span>Size</span>
+            <input id="captionSizeInput" type="range" min="16" max="42" value="24" class="w-24 bg-slate-800 rounded-full" />
+            <span id="captionSizeVal" class="font-mono text-slate-300 w-8">24px</span>
+          </label>
+          <label class="flex items-center gap-2 text-slate-400">
+            <span>BG</span>
+            <input id="captionBgOpacity" type="range" min="0" max="100" value="82" class="w-20 bg-slate-800 rounded-full" />
+          </label>
+          <label class="flex items-center gap-2 text-slate-400">
+            <span>Color</span>
+            <input id="captionColorInput" type="color" value="#ffffff" class="w-6 h-6 rounded bg-transparent border-0 cursor-pointer" />
+          </label>
+        </div>
+      </div>
+    </section>
+
+    <!-- Right Column: Hebrew Captions Studio -->
+    <aside class="xl:col-span-5 rounded-2xl bg-cinema-900 border border-slate-800 flex flex-col overflow-hidden max-h-[860px]">
+      <!-- Panel Header -->
+      <div class="p-4 border-b border-slate-800 flex items-center justify-between gap-2">
+        <div>
+          <h2 class="text-base font-bold text-white flex items-center gap-2">
+            <span>Hebrew Captions Generator</span>
+            <span class="text-xs font-normal text-slate-400">(מחולל כתוביות)</span>
+          </h2>
+          <p class="text-xs text-slate-400">Generate via Netlify Whisper AI or browser speech recognition</p>
+        </div>
+        <select id="captionLangSelect" class="px-2.5 py-1.5 rounded-lg bg-cinema-950 border border-slate-700 text-xs text-slate-200 focus:outline-none focus:border-cyan-400">
+          <option value="he" selected>עברית (Hebrew - he)</option>
+          <option value="en">English (en)</option>
+          <option value="ar">العربية (Arabic - ar)</option>
+          <option value="auto">Auto-Detect</option>
+        </select>
+      </div>
+
+      <!-- Mode Switch Tabs -->
+      <div class="grid grid-cols-2 border-b border-slate-800 bg-cinema-950/60 text-xs font-semibold">
+        <button id="tabAiBtn" class="py-2.5 px-3 border-b-2 border-cyan-400 text-cyan-300 bg-cyan-500/5 transition">
+          1. Netlify AI Transcribe
+        </button>
+        <button id="tabLiveBtn" class="py-2.5 px-3 border-b-2 border-transparent text-slate-400 hover:text-slate-200 transition">
+          2. Live Speech-to-Text (Browser)
+        </button>
+      </div>
+
+      <!-- Tab 1: Netlify Serverless AI -->
+      <div id="aiTabPanel" class="p-4 border-b border-slate-800 flex flex-col gap-3 bg-cinema-900/50">
+        <div class="flex items-center gap-2 text-xs">
+          <span class="text-slate-400">Endpoint:</span>
+          <input id="endpointInput" type="text" value="/api/transcribe" class="flex-1 px-2.5 py-1.5 rounded-lg bg-cinema-950 border border-slate-800 font-mono text-slate-200 focus:outline-none focus:border-cyan-400" />
+        </div>
+
+        <button id="extractAndTranscribeBtn" class="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-teal-400 to-cyan-400 hover:from-teal-300 hover:to-cyan-300 text-cinema-950 font-bold text-sm flex items-center justify-center gap-2 shadow-lg shadow-cyan-500/15 transition">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+          </svg>
+          <span>Extract Audio & Generate Hebrew Captions</span>
+        </button>
+
+        <div id="aiStatusBanner" class="hidden rounded-xl p-3 text-xs leading-relaxed"></div>
+      </div>
+
+      <!-- Tab 2: Live Speech-to-Text -->
+      <div id="liveTabPanel" class="hidden p-4 border-b border-slate-800 flex flex-col gap-3 bg-cinema-900/50">
+        <p class="text-xs text-slate-300 leading-relaxed">
+          Uses your browser's built-in <span class="font-mono text-cyan-300">he-IL</span> speech recognizer to transcribe audio in real time while your video plays (best in Chrome/Edge).
+        </p>
+        <div class="flex items-center gap-2">
+          <button id="toggleLiveSpeechBtn" class="flex-1 py-2.5 px-4 rounded-xl bg-rose-500 hover:bg-rose-400 text-white font-semibold text-sm flex items-center justify-center gap-2 transition">
+            <span id="liveDot" class="w-2.5 h-2.5 rounded-full bg-white"></span>
+            <span id="liveSpeechBtnLabel">Start Live Hebrew Dictation</span>
+          </button>
+        </div>
+        <div id="liveInterimBox" class="hidden rounded-lg bg-cinema-950 border border-slate-800 px-3 py-2 text-xs text-cyan-300 hebrew-rtl"></div>
+      </div>
+
+      <!-- Cue Toolbar -->
+      <div class="px-4 py-2.5 border-b border-slate-800 bg-cinema-950/40 flex items-center justify-between gap-2 flex-wrap">
+        <div class="flex items-center gap-2">
+          <button id="addCueBtn" class="px-2.5 py-1.5 rounded-lg bg-cyan-500/15 hover:bg-cyan-500/25 text-cyan-300 border border-cyan-500/30 text-xs font-semibold transition">
+            + Add Cue
+          </button>
+          <span id="cueCountBadge" class="px-2 py-1 rounded-md bg-cinema-850 border border-slate-800 font-mono text-[11px] text-slate-400">0 cues</span>
+        </div>
+
+        <div class="flex items-center gap-1.5">
+          <label class="cursor-pointer px-2.5 py-1.5 rounded-lg bg-cinema-850 hover:bg-cinema-800 border border-slate-700/80 text-xs text-slate-300 transition">
+            Import
+            <input id="importSubInput" type="file" accept=".srt,.vtt" class="hidden" />
+          </label>
+          <button id="exportVttBtn" class="px-2.5 py-1.5 rounded-lg bg-cinema-850 hover:bg-cinema-800 border border-slate-700/80 text-xs font-mono text-slate-200 transition">.VTT</button>
+          <button id="exportSrtBtn" class="px-2.5 py-1.5 rounded-lg bg-cinema-850 hover:bg-cinema-800 border border-slate-700/80 text-xs font-mono text-amber-300 transition">.SRT</button>
+        </div>
+      </div>
+
+      <!-- Cue List -->
+      <div id="cueListContainer" class="flex-1 overflow-y-auto p-3 flex flex-col gap-2.5">
+        <div id="emptyCuesPlaceholder" class="h-48 flex flex-col items-center justify-center text-center px-6 text-slate-500 text-xs">
+          <p class="mb-1 text-slate-400 font-medium">No captions yet</p>
+          <p>Click <span class="text-cyan-300">Extract Audio & Generate Hebrew Captions</span>, use Live Speech, or click <span class="text-cyan-300">+ Add Cue</span>.</p>
+        </div>
+      </div>
+    </aside>
+  </main>
+
+  <!-- Netlify Script Modal -->
+  <div id="netlifyModal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-cinema-900 border border-slate-700 rounded-2xl max-w-3xl w-full max-h-[90vh] flex flex-col overflow-hidden shadow-2xl">
+      <div class="px-5 py-4 border-b border-slate-800 flex items-center justify-between">
+        <div>
+          <h3 class="text-base font-bold text-white">Netlify Serverless Whisper Setup</h3>
+          <p class="text-xs text-slate-400">Place these two files alongside your <code class="text-cyan-300">index.html</code> and set <code class="text-amber-300">OPENAI_API_KEY</code> in Netlify.</p>
+        </div>
+        <button id="closeNetlifyModalBtn" class="p-1.5 rounded-lg bg-cinema-800 hover:bg-cinema-700 text-slate-300">✕</button>
+      </div>
+
+      <div class="p-5 overflow-y-auto flex flex-col gap-5 text-xs">
+        <div>
+          <div class="flex items-center justify-between mb-1.5">
+            <span class="font-mono font-semibold text-cyan-300">1. netlify/functions/transcribe.mjs</span>
+            <button onclick="copyCodeBlock('codeTranscribeMjs', this)" class="px-2.5 py-1 rounded bg-cinema-800 hover:bg-cinema-700 text-slate-200 border border-slate-700">Copy</button>
+          </div>
+          <pre id="codeTranscribeMjs" class="p-3.5 rounded-xl bg-cinema-950 border border-slate-800 font-mono text-[11px] text-slate-300 overflow-x-auto leading-relaxed"></pre>
+        </div>
+
+        <div>
+          <div class="flex items-center justify-between mb-1.5">
+            <span class="font-mono font-semibold text-amber-300">2. netlify.toml</span>
+            <button onclick="copyCodeBlock('codeNetlifyToml', this)" class="px-2.5 py-1 rounded bg-cinema-800 hover:bg-cinema-700 text-slate-200 border border-slate-700">Copy</button>
+          </div>
+          <pre id="codeNetlifyToml" class="p-3.5 rounded-xl bg-cinema-950 border border-slate-800 font-mono text-[11px] text-slate-300 overflow-x-auto leading-relaxed"></pre>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // --- State ---
+    const state = {
+      cues: [],
+      captionsVisible: true,
+      volumePercent: 100,
+      lastNonZeroVolume: 100,
+      playbackRate: 1.0,
+      isDemo: false,
+      demoPlaying: false,
+      demoTime: 0,
+      demoDuration: 24,
+      demoTimer: null,
+      currentFile: null,
+      audioCtx: null,
+      gainNode: null,
+      compressorNode: null,
+      analyserNode: null,
+      mediaSourceNode: null,
+      recognition: null,
+      isListening: false,
+    };
+
+    const HEBREW_REGEX = /[֐-׿]/;
+
+    // --- DOM Elements ---
+    const video = document.getElementById('videoPlayer');
+    const demoCanvas = document.getElementById('demoCanvas');
+    const dropzoneOverlay = document.getElementById('dropzoneOverlay');
+    const mediaWrapper = document.getElementById('mediaWrapper');
+    const transportControls = document.getElementById('transportControls');
+    const seekSlider = document.getElementById('seekSlider');
+    const currentTimeLabel = document.getElementById('currentTimeLabel');
+    const durationLabel = document.getElementById('durationLabel');
+    const playIcon = document.getElementById('playIcon');
+    const pauseIcon = document.getElementById('pauseIcon');
+    const subtitleOverlayText = document.getElementById('subtitleOverlayText');
+    const cueListContainer = document.getElementById('cueListContainer');
+    const emptyCuesPlaceholder = document.getElementById('emptyCuesPlaceholder');
+    const cueCountBadge = document.getElementById('cueCountBadge');
+    const cueMarkersLayer = document.getElementById('cueMarkersLayer');
+
+    // --- Audio Engine (0% to 400% Gain + Limiter + VU Meter) ---
+    function ensureAudioGraph() {
+      if (state.audioCtx) {
+        if (state.audioCtx.state === 'suspended') state.audioCtx.resume();
+        return;
+      }
+      const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+      const ctx = new AudioContextClass();
+      const source = ctx.createMediaElementSource(video);
+      const gain = ctx.createGain();
+      const compressor = ctx.createDynamicsCompressor();
+      const analyser = ctx.createAnalyser();
+
+      compressor.threshold.value = -6;
+      compressor.knee.value = 12;
+      compressor.ratio.value = 8;
+      compressor.attack.value = 0.003;
+      compressor.release.value = 0.15;
+
+      analyser.fftSize = 256;
+      gain.gain.value = state.volumePercent / 100;
+
+      source.connect(gain);
+      gain.connect(compressor);
+      compressor.connect(analyser);
+      analyser.connect(ctx.destination);
+
+      state.audioCtx = ctx;
+      state.mediaSourceNode = source;
+      state.gainNode = gain;
+      state.compressorNode = compressor;
+      state.analyserNode = analyser;
+
+      requestAnimationFrame(updateVuMeter);
+    }
+
+    function updateVuMeter() {
+      if (state.analyserNode) {
+        const data = new Uint8Array(state.analyserNode.frequencyBinCount);
+        state.analyserNode.getByteFrequencyData(data);
+        let sum = 0;
+        for (let i = 0; i < data.length; i++) sum += data[i];
+        const avg = sum / data.length;
+        const pct = Math.min(100, Math.round((avg / 140) * 100));
+        document.getElementById('vuMeterBar').style.width = pct + '%';
+      }
+      requestAnimationFrame(updateVuMeter);
+    }
+
+    function setVolumePercent(pct) {
+      pct = Math.max(0, Math.min(400, Math.round(pct)));
+      state.volumePercent = pct;
+      if (pct > 0) state.lastNonZeroVolume = pct;
+
+      document.getElementById('volumeSlider').value = pct;
+      const badge = document.getElementById('volumeBadge');
+      badge.textContent = pct + '%';
+
+      if (pct === 0) {
+        badge.className = 'font-mono text-sm font-bold px-2.5 py-0.5 rounded-md bg-slate-800 text-slate-400 border border-slate-700';
+      } else if (pct <= 150) {
+        badge.className = 'font-mono text-sm font-bold px-2.5 py-0.5 rounded-md bg-cyan-500/15 text-cyan-300 border border-cyan-500/30';
+      } else if (pct <= 275) {
+        badge.className = 'font-mono text-sm font-bold px-2.5 py-0.5 rounded-md bg-amber-500/15 text-amber-300 border border-amber-500/30';
+      } else {
+        badge.className = 'font-mono text-sm font-bold px-2.5 py-0.5 rounded-md bg-rose-500/20 text-rose-300 border border-rose-500/40';
+      }
+
+      if (state.gainNode) {
+        state.gainNode.gain.setTargetAtTime(pct / 100, state.audioCtx.currentTime, 0.015);
+      } else {
+        video.volume = Math.min(1, pct / 100);
+      }
+
+      document.querySelectorAll('.vol-preset').forEach(btn => {
+        const v = Number(btn.dataset.vol);
+        btn.classList.toggle('ring-1', v === pct);
+        btn.classList.toggle('ring-cyan-400', v === pct);
+      });
+    }
+
+    // --- Playback Speed ---
+    function setPlaybackSpeed(rate) {
+      rate = Math.max(0.1, Math.min(4.0, Number(rate) || 1.0));
+      state.playbackRate = rate;
+      video.playbackRate = rate;
+      document.getElementById('speedSlider').value = rate;
+      document.getElementById('customSpeedInput').value = rate.toFixed(2);
+
+      document.querySelectorAll('.speed-preset').forEach(btn => {
+        const s = Number(btn.dataset.speed);
+        const active = Math.abs(s - rate) < 0.01;
+        btn.classList.toggle('bg-teal-500/20', active);
+        btn.classList.toggle('border-teal-500/40', active);
+        btn.classList.toggle('text-teal-300', active);
+      });
+    }
+
+    // --- Media Loading & Demo Mode ---
+    function loadLocalFile(file) {
+      if (!file) return;
+      stopDemoMode();
+      state.currentFile = file;
+      const url = URL.createObjectURL(file);
+      video.src = url;
+      video.classList.remove('hidden');
+      demoCanvas.classList.add('hidden');
+      dropzoneOverlay.classList.add('hidden');
+      mediaWrapper.classList.remove('hidden');
+      transportControls.classList.remove('hidden');
+      document.getElementById('fileNameBadge').textContent = file.name;
+      setPlaybackSpeed(state.playbackRate);
+      renderCueMarkers();
+    }
+
+    function startDemoMode() {
+      state.isDemo = true;
+      state.currentFile = null;
+      state.demoTime = 0;
+      state.demoPlaying = true;
+      video.pause();
+      video.removeAttribute('src');
+      video.classList.add('hidden');
+      demoCanvas.classList.remove('hidden');
+      dropzoneOverlay.classList.add('hidden');
+      mediaWrapper.classList.remove('hidden');
+      transportControls.classList.remove('hidden');
+      document.getElementById('fileNameBadge').textContent = 'hebrew_demo_stream.mp4';
+
+      state.cues = [
+        { start: 0.5, end: 4.5, text: 'ברוכים הבאים לאולפן קולנוע — נגן וידאו מתקדם' },
+        { start: 5.0, end: 10.0, text: 'ניתן להגביר את עוצמת השמע עד 400% ללא עיוותים' },
+        { start: 10.5, end: 16.0, text: 'שליטה מדויקת במהירות הניגון מ-0.1x ועד 4.0x' },
+        { start: 16.5, end: 23.0, text: 'תמיכה מלאה בכתוביות בעברית מימין לשמאל וייצוא SRT / VTT' },
+      ];
+      renderCueList();
+      updatePlayPauseIcons(true);
+
+      if (state.demoTimer) clearInterval(state.demoTimer);
+      state.demoTimer = setInterval(() => {
+        if (!state.isDemo) return;
+        if (state.demoPlaying) {
+          state.demoTime += 0.05 * state.playbackRate;
+          if (state.demoTime >= state.demoDuration) state.demoTime = 0;
+        }
+        drawDemoFrame();
+        syncTimelineUI(state.demoTime, state.demoDuration);
+      }, 50);
+    }
+
+    function stopDemoMode() {
+      state.isDemo = false;
+      state.demoPlaying = false;
+      if (state.demoTimer) clearInterval(state.demoTimer);
+    }
+
+    function drawDemoFrame() {
+      const ctx = demoCanvas.getContext('2d');
+      const w = (demoCanvas.width = 960);
+      const h = (demoCanvas.height = 540);
+      const t = state.demoTime;
+
+      const grad = ctx.createLinearGradient(0, 0, w, h);
+      grad.addColorStop(0, '#090d16');
+      grad.addColorStop(1, '#111d2e');
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, w, h);
+
+      // Animated audio bars
+      const bars = 36;
+      const barW = 14;
+      const gap = 8;
+      const startX = (w - bars * (barW + gap)) / 2;
+      for (let i = 0; i < bars; i++) {
+        const amp = Math.abs(Math.sin(t * 3.2 + i * 0.45)) * Math.cos(t * 1.4 - i * 0.2);
+        const barH = 24 + Math.abs(amp) * 140 * (state.volumePercent / 100);
+        ctx.fillStyle = i % 2 === 0 ? 'rgba(34, 211, 238, 0.7)' : 'rgba(45, 212, 191, 0.6)';
+        ctx.fillRect(startX + i * (barW + gap), h / 2 - barH / 2 - 20, barW, Math.min(260, barH));
+      }
+
+      ctx.fillStyle = '#94a3b8';
+      ctx.font = '600 18px Inter, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText(`DEMO STREAM • SPEED ${state.playbackRate.toFixed(2)}x • GAIN ${state.volumePercent}%`, w / 2, 70);
+    }
+
+    // --- Playback & Time Sync ---
+    function getCurrentPlaybackTime() {
+      return state.isDemo ? state.demoTime : (video.currentTime || 0);
+    }
+
+    function getTotalDuration() {
+      return state.isDemo ? state.demoDuration : (video.duration || 0);
+    }
+
+    function seekTo(seconds) {
+      const dur = getTotalDuration();
+      const clamped = Math.max(0, Math.min(dur || 0, seconds));
+      if (state.isDemo) {
+        state.demoTime = clamped;
+        drawDemoFrame();
+        syncTimelineUI(clamped, dur);
+      } else if (video.src) {
+        video.currentTime = clamped;
+      }
+    }
+
+    function togglePlayPause() {
+      if (state.isDemo) {
+        state.demoPlaying = !state.demoPlaying;
+        updatePlayPauseIcons(state.demoPlaying);
+        return;
+      }
+      if (!video.src) return;
+      ensureAudioGraph();
+      if (video.paused) {
+        video.play();
+      } else {
+        video.pause();
+      }
+    }
+
+    function updatePlayPauseIcons(isPlaying) {
+      playIcon.classList.toggle('hidden', isPlaying);
+      pauseIcon.classList.toggle('hidden', !isPlaying);
+    }
+
+    function formatTime(sec) {
+      if (!isFinite(sec) || sec < 0) sec = 0;
+      const m = Math.floor(sec / 60);
+      const s = Math.floor(sec % 60);
+      const d = Math.floor((sec % 1) * 10);
+      return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}.${d}`;
+    }
+
+    function formatSrtTime(sec) {
+      if (!isFinite(sec) || sec < 0) sec = 0;
+      const h = Math.floor(sec / 3600);
+      const m = Math.floor((sec % 3600) / 60);
+      const s = Math.floor(sec % 60);
+      const ms = Math.round((sec % 1) * 1000);
+      return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')},${String(ms).padStart(3, '0')}`;
+    }
+
+    function formatVttTime(sec) {
+      return formatSrtTime(sec).replace(',', '.');
+    }
+
+    function syncTimelineUI(cur, dur) {
+      currentTimeLabel.textContent = formatTime(cur);
+      durationLabel.textContent = formatTime(dur);
+      if (dur > 0) {
+        seekSlider.max = dur;
+        seekSlider.value = cur;
+      }
+      updateActiveSubtitle(cur);
+    }
+
+    function updateActiveSubtitle(cur) {
+      if (!state.captionsVisible) {
+        subtitleOverlayText.classList.add('hidden');
+        return;
+      }
+      const activeCue = state.cues.find(c => cur >= c.start && cur <= c.end);
+      if (activeCue && activeCue.text.trim()) {
+        subtitleOverlayText.textContent = activeCue.text;
+        const isHebrew = HEBREW_REGEX.test(activeCue.text);
+        subtitleOverlayText.setAttribute('dir', isHebrew ? 'rtl' : 'ltr');
+        subtitleOverlayText.classList.toggle('hebrew-rtl', isHebrew);
+        subtitleOverlayText.classList.remove('hidden');
+      } else {
+        subtitleOverlayText.classList.add('hidden');
+      }
+    }
+
+    // --- Cue Management & Rendering ---
+    function renderCueList() {
+      state.cues.sort((a, b) => a.start - b.start);
+      cueCountBadge.textContent = `${state.cues.length} cue${state.cues.length === 1 ? '' : 's'}`;
+      renderCueMarkers();
+
+      if (state.cues.length === 0) {
+        cueListContainer.innerHTML = '';
+        cueListContainer.appendChild(emptyCuesPlaceholder);
+        emptyCuesPlaceholder.classList.remove('hidden');
+        updateActiveSubtitle(getCurrentPlaybackTime());
+        return;
+      }
+
+      cueListContainer.innerHTML = '';
+      state.cues.forEach((cue, idx) => {
+        const isHeb = HEBREW_REGEX.test(cue.text);
+        const card = document.createElement('div');
+        card.className = 'rounded-xl bg-cinema-950/90 border border-slate-800 hover:border-slate-700 p-3 flex flex-col gap-2 transition';
+
+        card.innerHTML = `
+          <div class="flex items-center justify-between gap-2 text-[11px] font-mono">
+            <div class="flex items-center gap-1.5">
+              <button data-action="seek" class="px-1.5 py-0.5 rounded bg-cyan-500/15 text-cyan-300 hover:bg-cyan-500/25" title="Jump to cue">#${idx + 1}</button>
+              <input data-field="start" type="number" step="0.1" min="0" value="${cue.start.toFixed(1)}" class="w-16 px-1.5 py-0.5 rounded bg-cinema-900 border border-slate-800 text-slate-300 text-center" />
+              <button data-action="syncStart" title="Set start to current playhead" class="px-1.5 py-0.5 rounded bg-cinema-850 hover:bg-cinema-800 text-slate-400">In</button>
+              <span class="text-slate-600">→</span>
+              <input data-field="end" type="number" step="0.1" min="0" value="${cue.end.toFixed(1)}" class="w-16 px-1.5 py-0.5 rounded bg-cinema-900 border border-slate-800 text-slate-300 text-center" />
+              <button data-action="syncEnd" title="Set end to current playhead" class="px-1.5 py-0.5 rounded bg-cinema-850 hover:bg-cinema-800 text-slate-400">Out</button>
+            </div>
+            <button data-action="delete" class="text-slate-500 hover:text-rose-400 px-1.5 py-0.5 transition" title="Delete cue">✕</button>
+          </div>
+          <textarea rows="2" dir="${isHeb ? 'rtl' : 'auto'}" class="w-full rounded-lg bg-cinema-900 border border-slate-800 focus:border-cyan-400 focus:outline-none px-2.5 py-1.5 text-sm text-white leading-snug ${isHeb ? 'hebrew-rtl' : ''}">${cue.text}</textarea>
+        `;
+
+        card.querySelector('[data-action="seek"]').addEventListener('click', () => seekTo(cue.start));
+        card.querySelector('[data-action="syncStart"]').addEventListener('click', () => {
+          cue.start = Number(getCurrentPlaybackTime().toFixed(1));
+          renderCueList();
+        });
+        card.querySelector('[data-action="syncEnd"]').addEventListener('click', () => {
+          cue.end = Number(getCurrentPlaybackTime().toFixed(1));
+          renderCueList();
+        });
+        card.querySelector('[data-action="delete"]').addEventListener('click', () => {
+          state.cues.splice(idx, 1);
+          renderCueList();
+        });
+        card.querySelector('[data-field="start"]').addEventListener('change', (e) => {
+          cue.start = Math.max(0, Number(e.target.value) || 0);
+          updateActiveSubtitle(getCurrentPlaybackTime());
+          renderCueMarkers();
+        });
+        card.querySelector('[data-field="end"]').addEventListener('change', (e) => {
+          cue.end = Math.max(cue.start + 0.1, Number(e.target.value) || 0);
+          updateActiveSubtitle(getCurrentPlaybackTime());
+          renderCueMarkers();
+        });
+        const textarea = card.querySelector('textarea');
+        textarea.addEventListener('input', (e) => {
+          cue.text = e.target.value;
+          const heb = HEBREW_REGEX.test(cue.text);
+          textarea.setAttribute('dir', heb ? 'rtl' : 'auto');
+          textarea.classList.toggle('hebrew-rtl', heb);
+          updateActiveSubtitle(getCurrentPlaybackTime());
+        });
+
+        cueListContainer.appendChild(card);
+      });
+      updateActiveSubtitle(getCurrentPlaybackTime());
+    }
+
+    function renderCueMarkers() {
+      const dur = getTotalDuration();
+      cueMarkersLayer.innerHTML = '';
+      if (!dur || dur <= 0) return;
+      state.cues.forEach(c => {
+        const left = Math.max(0, Math.min(100, (c.start / dur) * 100));
+        const width = Math.max(0.5, Math.min(100 - left, ((c.end - c.start) / dur) * 100));
+        const mark = document.createElement('div');
+        mark.className = 'absolute top-0 bottom-0 bg-cyan-400/40';
+        mark.style.left = left + '%';
+        mark.style.width = width + '%';
+        cueMarkersLayer.appendChild(mark);
+      });
+    }
+
+    // --- Client-Side 16kHz Mono WAV Extraction & Netlify Transcription ---
+    async function extractDownsampledWavBase64(file) {
+      const arrayBuffer = await file.arrayBuffer();
+      const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+      const tempCtx = new AudioContextClass();
+      const decoded = await tempCtx.decodeAudioData(arrayBuffer);
+      await tempCtx.close();
+
+      const targetRate = 16000;
+      const frameCount = Math.ceil(decoded.duration * targetRate);
+      const offlineCtx = new OfflineAudioContext(1, frameCount, targetRate);
+      const src = offlineCtx.createBufferSource();
+      src.buffer = decoded;
+      src.connect(offlineCtx.destination);
+      src.start(0);
+      const rendered = await offlineCtx.startRendering();
+
+      const samples = rendered.getChannelData(0);
+      const wavBuffer = encodeMonoWav16Bit(samples, targetRate);
+      const bytes = new Uint8Array(wavBuffer);
+      let binary = '';
+      const chunkSize = 0x8000;
+      for (let i = 0; i < bytes.length; i += chunkSize) {
+        binary += String.fromCharCode.apply(null, bytes.subarray(i, i + chunkSize));
+      }
+      return btoa(binary);
+    }
+
+    function encodeMonoWav16Bit(samples, sampleRate) {
+      const buffer = new ArrayBuffer(44 + samples.length * 2);
+      const view = new DataView(buffer);
+      const writeStr = (offset, str) => {
+        for (let i = 0; i < str.length; i++) view.setUint8(offset + i, str.charCodeAt(i));
+      };
+      writeStr(0, 'RIFF');
+      view.setUint32(4, 36 + samples.length * 2, true);
+      writeStr(8, 'WAVE');
+      writeStr(12, 'fmt ');
+      view.setUint32(16, 16, true);
+      view.setUint16(20, 1, true);
+      view.setUint16(22, 1, true);
+      view.setUint32(24, sampleRate, true);
+      view.setUint32(28, sampleRate * 2, true);
+      view.setUint16(32, 2, true);
+      view.setUint16(34, 16, true);
+      writeStr(36, 'data');
+      view.setUint32(40, samples.length * 2, true);
+
+      let offset = 44;
+      for (let i = 0; i < samples.length; i++, offset += 2) {
+        const s = Math.max(-1, Math.min(1, samples[i]));
+        view.setInt16(offset, s < 0 ? s * 0x8000 : s * 0x7fff, true);
+      }
+      return buffer;
+    }
+
+    function showAiBanner(type, htmlContent) {
+      const banner = document.getElementById('aiStatusBanner');
+      banner.classList.remove('hidden', 'bg-cyan-500/10', 'border-cyan-500/30', 'text-cyan-200', 'bg-amber-500/10', 'border-amber-500/30', 'text-amber-200', 'bg-rose-500/10', 'border-rose-500/30', 'text-rose-200');
+      banner.classList.add('border');
+      if (type === 'info') {
+        banner.classList.add('bg-cyan-500/10', 'border-cyan-500/30', 'text-cyan-200');
+      } else if (type === 'warn') {
+        banner.classList.add('bg-amber-500/10', 'border-amber-500/30', 'text-amber-200');
+      } else {
+        banner.classList.add('bg-rose-500/10', 'border-rose-500/30', 'text-rose-200');
+      }
+      banner.innerHTML = htmlContent;
+    }
+
+    async function handleTranscribeClick() {
+      if (!state.currentFile) {
+        showAiBanner('warn', 'Upload a local video or audio file first, or try the <b>Demo Stream</b>.');
+        return;
+      }
+
+      const endpoint = document.getElementById('endpointInput').value.trim() || '/api/transcribe';
+      const language = document.getElementById('captionLangSelect').value;
+
+      try {
+        showAiBanner('info', 'Extracting & compressing audio track to 16kHz Mono WAV...');
+        const audioBase64 = await extractDownsampledWavBase64(state.currentFile);
+
+        showAiBanner('info', `Sending audio to <code class="font-mono">${endpoint}</code> for Hebrew AI transcription...`);
+        const res = await fetch(endpoint, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            audioBase64,
+            fileName: 'extracted_audio.wav',
+            mimeType: 'audio/wav',
+            language,
+          }),
+        });
+
+        const contentType = res.headers.get('content-type') || '';
+        if (!contentType.includes('application/json')) {
+          throw new Error('STANDALONE_MODE');
+        }
+
+        const data = await res.json();
+        if (!res.ok) {
+          throw new Error(data.error || `Server error (${res.status})`);
+        }
+
+        if (Array.isArray(data.cues) && data.cues.length > 0) {
+          state.cues = data.cues;
+          renderCueList();
+          showAiBanner('info', `Generated <b>${data.cues.length}</b> timestamped captions successfully!`);
+        } else {
+          showAiBanner('warn', 'Transcription finished, but no spoken words were detected in the audio.');
+        }
+      } catch (err) {
+        if (err.message === 'STANDALONE_MODE' || err.name === 'TypeError') {
+          showAiBanner(
+            'warn',
+            `<b>Standalone Mode Detected:</b> <code class="font-mono">${endpoint}</code> is not active yet. Deploy with the Netlify script or use <b>Live Speech-to-Text</b> right now in your browser!
+            <div class="mt-2.5 flex gap-2">
+              <button onclick="document.getElementById('openNetlifyModalBtn').click()" class="px-2.5 py-1.5 rounded-lg bg-amber-500/20 hover:bg-amber-500/30 border border-amber-500/40 font-semibold text-amber-200">View Netlify Script</button>
+              <button onclick="switchCaptionTab('live')" class="px-2.5 py-1.5 rounded-lg bg-cinema-800 hover:bg-cinema-700 border border-slate-700 font-semibold text-slate-200">Switch to Live Speech</button>
+            </div>`
+          );
+        } else {
+          showAiBanner('error', `<b>Error:</b> ${err.message}`);
+        }
+      }
+    }
+
+    // --- Live Browser Speech-to-Text ---
+    function toggleLiveSpeech() {
+      const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (!SpeechRec) {
+        alert('SpeechRecognition is not supported in this browser. Please use Google Chrome or Microsoft Edge.');
+        return;
+      }
+
+      if (state.isListening && state.recognition) {
+        state.isListening = false;
+        state.recognition.stop();
+        updateLiveSpeechUI(false);
+        return;
+      }
+
+      const rec = new SpeechRec();
+      const langSel = document.getElementById('captionLangSelect').value;
+      rec.lang = langSel === 'en' ? 'en-US' : langSel === 'ar' ? 'ar-SA' : 'he-IL';
+      rec.continuous = true;
+      rec.interimResults = true;
+
+      let segmentStart = getCurrentPlaybackTime();
+
+      rec.onresult = (event) => {
+        let interim = '';
+        for (let i = event.resultIndex; i < event.results.length; i++) {
+          const transcript = event.results[i][0].transcript.trim();
+          if (event.results[i].isFinal) {
+            const end = Math.max(segmentStart + 1.2, getCurrentPlaybackTime());
+            state.cues.push({ start: Number(segmentStart.toFixed(1)), end: Number(end.toFixed(1)), text: transcript });
+            renderCueList();
+            segmentStart = end;
+            document.getElementById('liveInterimBox').classList.add('hidden');
+          } else {
+            interim += transcript + ' ';
+          }
+        }
+        if (interim.trim()) {
+          const box = document.getElementById('liveInterimBox');
+          box.textContent = interim.trim();
+          box.classList.remove('hidden');
+        }
+      };
+
+      rec.onend = () => {
+        if (state.isListening) {
+          segmentStart = getCurrentPlaybackTime();
+          rec.start();
+        } else {
+          updateLiveSpeechUI(false);
+        }
+      };
+
+      state.recognition = rec;
+      state.isListening = true;
+      rec.start();
+      updateLiveSpeechUI(true);
+    }
+
+    function updateLiveSpeechUI(listening) {
+      const btn = document.getElementById('toggleLiveSpeechBtn');
+      const label = document.getElementById('liveSpeechBtnLabel');
+      const dot = document.getElementById('liveDot');
+      if (listening) {
+        btn.classList.replace('bg-rose-500', 'bg-emerald-600');
+        label.textContent = 'Listening (he-IL)... Click to Stop';
+        dot.classList.add('animate-ping');
+      } else {
+        btn.classList.replace('bg-emerald-600', 'bg-rose-500');
+        label.textContent = 'Start Live Hebrew Dictation';
+        dot.classList.remove('animate-ping');
+      }
+    }
+
+    // --- Export / Import SRT & VTT ---
+    function downloadTextFile(filename, content) {
+      const bom = '﻿'; // UTF-8 BOM for Hebrew compatibility
+      const blob = new Blob([bom + content], { type: 'text/plain;charset=utf-8' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = filename;
+      a.click();
+    }
+
+    function exportSrt() {
+      const lines = state.cues.map((c, i) => `${i + 1}
+${formatSrtTime(c.start)} --> ${formatSrtTime(c.end)}
+${c.text}
+`);
+      downloadTextFile('hebrew_captions.srt', lines.join('
+'));
+    }
+
+    function exportVtt() {
+      const lines = state.cues.map((c, i) => `${i + 1}
+${formatVttTime(c.start)} --> ${formatVttTime(c.end)}
+${c.text}
+`);
+      downloadTextFile('hebrew_captions.vtt', 'WEBVTT
+
+' + lines.join('
+'));
+    }
+
+    function parseTimestampToSeconds(ts) {
+      const clean = ts.trim().replace(',', '.');
+      const parts = clean.split(':');
+      if (parts.length === 3) {
+        return Number(parts[0]) * 3600 + Number(parts[1]) * 60 + Number(parts[2]);
+      }
+      if (parts.length === 2) {
+        return Number(parts[0]) * 60 + Number(parts[1]);
+      }
+      return 0;
+    }
+
+    function importSubtitleText(raw) {
+      const blocks = raw.replace(//g, '').split(/
+
++/);
+      const parsed = [];
+      for (const b of blocks) {
+        const lines = b.split('
+').map(l => l.trim()).filter(Boolean);
+        const arrowIdx = lines.findIndex(l => l.includes('-->'));
+        if (arrowIdx !== -1) {
+          const [startStr, endStr] = lines[arrowIdx].split('-->');
+          const text = lines.slice(arrowIdx + 1).join(' ');
+          if (text) {
+            parsed.push({
+              start: parseTimestampToSeconds(startStr),
+              end: parseTimestampToSeconds(endStr),
+              text,
+            });
+          }
+        }
+      }
+      if (parsed.length > 0) {
+        state.cues = parsed;
+        renderCueList();
+      }
+    }
+
+    // --- Tabs & Modals ---
+    function switchCaptionTab(tab) {
+      const isAi = tab === 'ai';
+      document.getElementById('aiTabPanel').classList.toggle('hidden', !isAi);
+      document.getElementById('liveTabPanel').classList.toggle('hidden', isAi);
+
+      const aiBtn = document.getElementById('tabAiBtn');
+      const liveBtn = document.getElementById('tabLiveBtn');
+      aiBtn.className = isAi
+        ? 'py-2.5 px-3 border-b-2 border-cyan-400 text-cyan-300 bg-cyan-500/5 transition'
+        : 'py-2.5 px-3 border-b-2 border-transparent text-slate-400 hover:text-slate-200 transition';
+      liveBtn.className = !isAi
+        ? 'py-2.5 px-3 border-b-2 border-cyan-400 text-cyan-300 bg-cyan-500/5 transition'
+        : 'py-2.5 px-3 border-b-2 border-transparent text-slate-400 hover:text-slate-200 transition';
+    }
+
+    function copyCodeBlock(elId, btn) {
+      const text = document.getElementById(elId).textContent;
+      navigator.clipboard.writeText(text);
+      const prev = btn.textContent;
+      btn.textContent = 'Copied!';
+      setTimeout(() => (btn.textContent = prev), 1500);
+    }
+
+    // Populate Netlify Modal snippets
+    document.getElementById('codeNetlifyToml').textContent = `[build]
+  publish = "."
+  functions = "netlify/functions"
+
+[functions]
+  node_bundler = "esbuild"
+
+[[redirects]]
+  from = "/api/transcribe"
+  to = "/.netlify/functions/transcribe"
+  status = 200`;
+
+    document.getElementById('codeTranscribeMjs').textContent = `export default async (req) => {
+  if (req.method !== "POST") {
+    return Response.json({ error: "Method not allowed" }, { status: 405 });
+  }
+  const apiKey = process.env.OPENAI_API_KEY;
+  if (!apiKey) {
+    return Response.json({ error: "Missing OPENAI_API_KEY in Netlify." }, { status: 500 });
+  }
+  const { audioBase64, fileName = "audio.wav", mimeType = "audio/wav", language = "he" } = await req.json();
+  const audioBlob = new Blob([Buffer.from(audioBase64, "base64")], { type: mimeType });
+
+  const formData = new FormData();
+  formData.append("file", audioBlob, fileName);
+  formData.append("model", "whisper-1");
+  if (language && language !== "auto") formData.append("language", language);
+  formData.append("response_format", "verbose_json");
+  formData.append("timestamp_granularities[]", "segment");
+
+  const res = await fetch("https://api.openai.com/v1/audio/transcriptions", {
+    method: "POST",
+    headers: { Authorization: \`Bearer \${apiKey}\` },
+    body: formData,
+  });
+  const data = await res.json();
+  if (!res.ok) return Response.json({ error: data?.error?.message || "Transcription failed" }, { status: res.status });
+
+  const cues = (data.segments || []).map((s) => ({
+    start: Number(s.start || 0),
+    end: Number(s.end || 0),
+    text: String(s.text || "").trim(),
+  })).filter((c) => c.text);
+
+  return Response.json({ cues, text: data.text || "" });
+};`;
+
+    // --- Event Listeners ---
+    document.getElementById('videoFileInput').addEventListener('change', (e) => loadLocalFile(e.target.files[0]));
+    document.getElementById('demoStreamBtn').addEventListener('click', startDemoMode);
+
+    const playerContainer = document.getElementById('playerContainer');
+    playerContainer.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      dropzoneOverlay.classList.add('border-cyan-400');
+    });
+    playerContainer.addEventListener('dragleave', () => dropzoneOverlay.classList.remove('border-cyan-400'));
+    playerContainer.addEventListener('drop', (e) => {
+      e.preventDefault();
+      dropzoneOverlay.classList.remove('border-cyan-400');
+      if (e.dataTransfer.files[0]) loadLocalFile(e.dataTransfer.files[0]);
+    });
+
+    video.addEventListener('play', () => updatePlayPauseIcons(true));
+    video.addEventListener('pause', () => updatePlayPauseIcons(false));
+    video.addEventListener('timeupdate', () => syncTimelineUI(video.currentTime, video.duration));
+    video.addEventListener('loadedmetadata', () => {
+      syncTimelineUI(0, video.duration);
+      renderCueMarkers();
+    });
+
+    document.getElementById('playPauseBtn').addEventListener('click', togglePlayPause);
+    document.getElementById('skipBackBtn').addEventListener('click', () => seekTo(getCurrentPlaybackTime() - 5));
+    document.getElementById('skipFwdBtn').addEventListener('click', () => seekTo(getCurrentPlaybackTime() + 5));
+    seekSlider.addEventListener('input', (e) => seekTo(Number(e.target.value)));
+
+    document.getElementById('volumeSlider').addEventListener('input', (e) => {
+      ensureAudioGraph();
+      setVolumePercent(Number(e.target.value));
+    });
+    document.getElementById('muteToggleBtn').addEventListener('click', () => {
+      ensureAudioGraph();
+      setVolumePercent(state.volumePercent === 0 ? state.lastNonZeroVolume : 0);
+    });
+    document.querySelectorAll('.vol-preset').forEach(btn => {
+      btn.addEventListener('click', () => {
+        ensureAudioGraph();
+        setVolumePercent(Number(btn.dataset.vol));
+      });
+    });
+
+    document.getElementById('speedSlider').addEventListener('input', (e) => setPlaybackSpeed(e.target.value));
+    document.getElementById('customSpeedInput').addEventListener('change', (e) => setPlaybackSpeed(e.target.value));
+    document.querySelectorAll('.speed-preset').forEach(btn => {
+      btn.addEventListener('click', () => setPlaybackSpeed(btn.dataset.speed));
+    });
+
+    document.getElementById('toggleCaptionsVisBtn').addEventListener('click', (e) => {
+      state.captionsVisible = !state.captionsVisible;
+      e.target.textContent = state.captionsVisible ? 'CC ON' : 'CC OFF';
+      updateActiveSubtitle(getCurrentPlaybackTime());
+    });
+
+    document.getElementById('captionSizeInput').addEventListener('input', (e) => {
+      subtitleOverlayText.style.fontSize = e.target.value + 'px';
+      document.getElementById('captionSizeVal').textContent = e.target.value + 'px';
+    });
+    document.getElementById('captionBgOpacity').addEventListener('input', (e) => {
+      const alpha = Number(e.target.value) / 100;
+      subtitleOverlayText.style.backgroundColor = `rgba(9, 11, 16, ${alpha})`;
+    });
+    document.getElementById('captionColorInput').addEventListener('input', (e) => {
+      subtitleOverlayText.style.color = e.target.value;
+    });
+
+    document.getElementById('pipBtn').addEventListener('click', async () => {
+      if (document.pictureInPictureElement) {
+        await document.exitPictureInPicture();
+      } else if (video.src && document.pictureInPictureEnabled) {
+        await video.requestPictureInPicture();
+      }
+    });
+
+    document.getElementById('fullscreenBtn').addEventListener('click', () => {
+      if (!document.fullscreenElement) {
+        playerContainer.requestFullscreen().catch(() => {});
+      } else {
+        document.exitFullscreen();
+      }
+    });
+
+    document.getElementById('tabAiBtn').addEventListener('click', () => switchCaptionTab('ai'));
+    document.getElementById('tabLiveBtn').addEventListener('click', () => switchCaptionTab('live'));
+    document.getElementById('extractAndTranscribeBtn').addEventListener('click', handleTranscribeClick);
+    document.getElementById('toggleLiveSpeechBtn').addEventListener('click', toggleLiveSpeech);
+
+    document.getElementById('addCueBtn').addEventListener('click', () => {
+      const cur = Number(getCurrentPlaybackTime().toFixed(1));
+      state.cues.push({ start: cur, end: Number((cur + 3).toFixed(1)), text: 'כתובית חדשה בעברית' });
+      renderCueList();
+    });
+
+    document.getElementById('exportSrtBtn').addEventListener('click', exportSrt);
+    document.getElementById('exportVttBtn').addEventListener('click', exportVtt);
+    document.getElementById('importSubInput').addEventListener('change', async (e) => {
+      const f = e.target.files[0];
+      if (!f) return;
+      importSubtitleText(await f.text());
+    });
+
+    document.getElementById('openNetlifyModalBtn').addEventListener('click', () => {
+      document.getElementById('netlifyModal').classList.remove('hidden');
+    });
+    document.getElementById('closeNetlifyModalBtn').addEventListener('click', () => {
+      document.getElementById('netlifyModal').classList.add('hidden');
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.code === 'Space' && !['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement.tagName)) {
+        e.preventDefault();
+        togglePlayPause();
+      }
+    });
+  </script>
+</body>
+</html>
